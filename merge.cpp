@@ -7,21 +7,25 @@
 using namespace std;
 using namespace chrono;
 
-void merge(vector<int>& arr, int left, int mid, int right) {
-    vector<int> leftArr(arr.begin() + left, arr.begin() + mid + 1);
-    vector<int> rightArr(arr.begin() + mid + 1, arr.begin() + right + 1);
+void merge(vector<pair<int, int>>& arr, int left, int mid, int right) {
+    vector<pair<int, int>> leftArr(arr.begin() + left, arr.begin() + mid + 1);
+    vector<pair<int, int>> rightArr(arr.begin() + mid + 1, arr.begin() + right + 1);
 
     int i = 0, j = 0, k = left;
     while (i < leftArr.size() && j < rightArr.size()) {
-        if (leftArr[i] <= rightArr[j]) arr[k++] = leftArr[i++];
-        else arr[k++] = rightArr[j++];
+        if (leftArr[i].first < rightArr[j].first ||
+            (leftArr[i].first == rightArr[j].first && leftArr[i].second <= rightArr[j].second)) {
+            arr[k++] = leftArr[i++];
+        } else {
+            arr[k++] = rightArr[j++];
+        }
     }
 
     while (i < leftArr.size()) arr[k++] = leftArr[i++];
     while (j < rightArr.size()) arr[k++] = rightArr[j++];
 }
 
-void mergeSort(vector<int>& arr, int left, int right) {
+void mergeSort(vector<pair<int, int>>& arr, int left, int right) {
     if (left >= right) return;
     int mid = (left + right) / 2;
     mergeSort(arr, left, mid);
@@ -29,9 +33,18 @@ void mergeSort(vector<int>& arr, int left, int right) {
     merge(arr, left, mid, right);
 }
 
-bool isSorted(const vector<int>& arr) {
+bool isSorted(const vector<pair<int, int>>& arr) {
     for (int i = 1; i < arr.size(); ++i)
-        if (arr[i - 1] > arr[i]) return false;
+        if (arr[i - 1].first > arr[i].first) return false;
+    return true;
+}
+
+bool isStable(const vector<pair<int, int>>& arr) {
+    for (int i = 1; i < arr.size(); ++i) {
+        if (arr[i - 1].first == arr[i].first &&
+            arr[i - 1].second > arr[i].second)
+            return false;
+    }
     return true;
 }
 
@@ -49,15 +62,16 @@ int main(int argc, char* argv[]) {
 
     int n;
     inFile >> n;
-    vector<int> original(n);
-    for (int i = 0; i < n; ++i) inFile >> original[i];
+    vector<int> values(n);
+    for (int i = 0; i < n; ++i) inFile >> values[i];
     inFile.close();
 
     double totalTime = 0.0;
-    vector<int> arr;
+    vector<pair<int, int>> arr;
 
     for (int trial = 1; trial <= 10; ++trial) {
-        arr = original;
+        arr.clear();
+        for (int i = 0; i < n; ++i) arr.emplace_back(values[i], i);
 
         auto start = high_resolution_clock::now();
         mergeSort(arr, 0, n - 1);
@@ -70,8 +84,7 @@ int main(int argc, char* argv[]) {
 
     double avgTime = totalTime / 10.0;
     cout << fixed << setprecision(4) << "Average Execution Time (10 runs): " << avgTime << " ms" << endl;
-
-    cout << "Final Result: " << (isSorted(arr) ? "Sorted" : "Not sorted") << endl;
+    cout << "Stability: " << (isStable(arr) ? "Stable" : "Not stable") << endl;
 
     return 0;
 }
