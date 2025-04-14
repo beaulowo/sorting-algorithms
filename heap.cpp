@@ -2,13 +2,14 @@
 #include <fstream>
 #include <vector>
 #include <chrono>
+
 using namespace std;
 using namespace chrono;
 
 void heapify(vector<int>& arr, int n, int i) {
-    int largest = i;          // 루트
-    int left = 2 * i + 1;     // 왼쪽 자식
-    int right = 2 * i + 2;    // 오른쪽 자식
+    int largest = i;       
+    int left = 2 * i + 1;   
+    int right = 2 * i + 2;   
 
     if (left < n && arr[left] > arr[largest])
         largest = left;
@@ -23,11 +24,9 @@ void heapify(vector<int>& arr, int n, int i) {
 void heapSort(vector<int>& arr) {
     int n = arr.size();
 
-    // 최대 힙 만들기
     for (int i = n / 2 - 1; i >= 0; --i)
         heapify(arr, n, i);
 
-    // 힙 정렬
     for (int i = n - 1; i > 0; --i) {
         swap(arr[0], arr[i]);
         heapify(arr, i, 0);
