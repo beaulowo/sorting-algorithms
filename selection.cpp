@@ -7,21 +7,30 @@
 using namespace std;
 using namespace chrono;
 
-void selectionSort(vector<int>& arr) {
+void selectionSort(vector<pair<int, int>>& arr) {
     int n = arr.size();
     for (int i = 0; i < n - 1; ++i) {
         int minIdx = i;
         for (int j = i + 1; j < n; ++j) {
-            if (arr[j] < arr[minIdx])
+            if (arr[j].first < arr[minIdx].first)
                 minIdx = j;
         }
         swap(arr[i], arr[minIdx]);
     }
 }
 
-bool isSorted(const vector<int>& arr) {
+bool isSorted(const vector<pair<int, int>>& arr) {
     for (size_t i = 1; i < arr.size(); ++i)
-        if (arr[i - 1] > arr[i]) return false;
+        if (arr[i - 1].first > arr[i].first) return false;
+    return true;
+}
+
+bool isStable(const vector<pair<int, int>>& arr) {
+    for (size_t i = 1; i < arr.size(); ++i) {
+        if (arr[i - 1].first == arr[i].first &&
+            arr[i - 1].second > arr[i].second)
+            return false;
+    }
     return true;
 }
 
@@ -42,10 +51,14 @@ int main(int argc, char* argv[]) {
     }
 
     string filename = argv[1];
+    vector<int> input = readInput(filename);
+    int n = input.size();
     double total_time = 0.0;
 
     for (int i = 0; i < 10; ++i) {
-        vector<int> arr = readInput(filename);
+        vector<pair<int, int>> arr(n);
+        for (int j = 0; j < n; ++j)
+            arr[j] = {input[j], j};
 
         auto start = high_resolution_clock::now();
         selectionSort(arr);
@@ -59,9 +72,11 @@ int main(int argc, char* argv[]) {
     double average = total_time / 10.0;
     cout << "Average Execution Time (10 runs): " << fixed << setprecision(4) << average << " ms" << endl;
 
-    vector<int> arr = readInput(filename);
+    vector<pair<int, int>> arr(n);
+    for (int j = 0; j < n; ++j)
+        arr[j] = {input[j], j};
     selectionSort(arr);
-    cout << "Final Result: " << (isSorted(arr) ? "Sorted" : "Not sorted") << endl;
+    cout << "Stability: " << (isStable(arr) ? "Stable" : "Not stable") << endl;
 
     return 0;
 }
