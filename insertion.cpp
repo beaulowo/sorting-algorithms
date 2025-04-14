@@ -7,12 +7,12 @@
 using namespace std;
 using namespace chrono;
 
-void insertionSort(vector<int>& arr) {
+void insertionSort(vector<pair<int, int>>& arr) {
     int n = arr.size();
     for (int i = 1; i < n; ++i) {
-        int key = arr[i];
+        auto key = arr[i];
         int j = i - 1;
-        while (j >= 0 && arr[j] > key) {
+        while (j >= 0 && arr[j].first > key.first) {
             arr[j + 1] = arr[j];
             --j;
         }
@@ -20,9 +20,18 @@ void insertionSort(vector<int>& arr) {
     }
 }
 
-bool isSorted(const vector<int>& arr) {
-    for (size_t i = 1; i < arr.size(); ++i)
-        if (arr[i - 1] > arr[i]) return false;
+bool isSorted(const vector<pair<int, int>>& arr) {
+    for (int i = 1; i < arr.size(); ++i)
+        if (arr[i - 1].first > arr[i].first) return false;
+    return true;
+}
+
+bool isStable(const vector<pair<int, int>>& arr) {
+    for (int i = 1; i < arr.size(); ++i) {
+        if (arr[i - 1].first == arr[i].first &&
+            arr[i - 1].second > arr[i].second)
+            return false;
+    }
     return true;
 }
 
@@ -43,10 +52,16 @@ int main(int argc, char* argv[]) {
     }
 
     string filename = argv[1];
+    vector<int> values = readInput(filename);
+    int n = values.size();
     double total_time = 0.0;
 
+    vector<pair<int, int>> arr;
+
     for (int i = 0; i < 10; ++i) {
-        vector<int> arr = readInput(filename);
+        arr.clear();
+        for (int j = 0; j < n; ++j)
+            arr.emplace_back(values[j], j);
 
         auto start = high_resolution_clock::now();
         insertionSort(arr);
@@ -59,10 +74,7 @@ int main(int argc, char* argv[]) {
 
     double average = total_time / 10.0;
     cout << "Average Execution Time (10 runs): " << fixed << setprecision(4) << average << " ms" << endl;
-
-    vector<int> arr = readInput(filename);
-    insertionSort(arr);
-    cout << "Final Result: " << (isSorted(arr) ? "Sorted" : "Not sorted") << endl;
+    cout << "Stability: " << (isStable(arr) ? "Stable" : "Not stable") << endl;
 
     return 0;
 }
