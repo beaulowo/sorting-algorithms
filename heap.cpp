@@ -7,14 +7,14 @@
 using namespace std;
 using namespace chrono;
 
-void heapify(vector<int>& arr, int n, int i) {
-    int largest = i;       
-    int left = 2 * i + 1;   
-    int right = 2 * i + 2;   
+void heapify(vector<pair<int, int>>& arr, int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
 
-    if (left < n && arr[left] > arr[largest])
+    if (left < n && arr[left].first > arr[largest].first)
         largest = left;
-    if (right < n && arr[right] > arr[largest])
+    if (right < n && arr[right].first > arr[largest].first)
         largest = right;
     if (largest != i) {
         swap(arr[i], arr[largest]);
@@ -22,7 +22,7 @@ void heapify(vector<int>& arr, int n, int i) {
     }
 }
 
-void heapSort(vector<int>& arr) {
+void heapSort(vector<pair<int, int>>& arr) {
     int n = arr.size();
 
     for (int i = n / 2 - 1; i >= 0; --i)
@@ -34,9 +34,18 @@ void heapSort(vector<int>& arr) {
     }
 }
 
-bool isSorted(const vector<int>& arr) {
+bool isSorted(const vector<pair<int, int>>& arr) {
     for (int i = 1; i < arr.size(); ++i)
-        if (arr[i - 1] > arr[i]) return false;
+        if (arr[i - 1].first > arr[i].first) return false;
+    return true;
+}
+
+bool isStable(const vector<pair<int, int>>& sorted) {
+    for (int i = 1; i < sorted.size(); ++i) {
+        if (sorted[i - 1].first == sorted[i].first &&
+            sorted[i - 1].second > sorted[i].second)
+            return false;
+    }
     return true;
 }
 
@@ -54,15 +63,16 @@ int main(int argc, char* argv[]) {
 
     int n;
     inFile >> n;
-    vector<int> original(n);
-    for (int i = 0; i < n; ++i) inFile >> original[i];
+    vector<int> values(n);
+    for (int i = 0; i < n; ++i) inFile >> values[i];
     inFile.close();
 
     double totalTime = 0.0;
-    vector<int> arr;
+    vector<pair<int, int>> arr;
 
     for (int trial = 1; trial <= 10; ++trial) {
-        arr = original;
+        arr.clear();
+        for (int i = 0; i < n; ++i) arr.emplace_back(values[i], i); // (값, 인덱스)
 
         auto start = high_resolution_clock::now();
         heapSort(arr);
@@ -75,8 +85,7 @@ int main(int argc, char* argv[]) {
 
     double avgTime = totalTime / 10.0;
     cout << fixed << setprecision(4) << "Average Execution Time (10 runs): " << avgTime << " ms" << endl;
-
-    cout << "Final Result: " << (isSorted(arr) ? "Sorted" : "Not sorted") << endl;
+    cout << "Stability: " << (isStable(arr) ? "Stable" : "Not stable") << endl;
 
     return 0;
 }
