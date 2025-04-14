@@ -3,7 +3,6 @@
 #include <vector>
 #include <chrono>
 #include <iomanip>
-#include <algorithm>
 
 using namespace std;
 using namespace chrono;
