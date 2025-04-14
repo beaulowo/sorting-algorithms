@@ -7,11 +7,11 @@
 using namespace std;
 using namespace chrono;
 
-int partition(vector<int>& arr, int low, int high) {
-    int pivot = arr[high];
+int partition(vector<pair<int, int>>& arr, int low, int high) {
+    int pivot = arr[high].first;
     int i = low - 1;
     for (int j = low; j < high; ++j) {
-        if (arr[j] <= pivot) {
+        if (arr[j].first <= pivot) {
             ++i;
             swap(arr[i], arr[j]);
         }
@@ -20,7 +20,7 @@ int partition(vector<int>& arr, int low, int high) {
     return i + 1;
 }
 
-void quickSort(vector<int>& arr, int low, int high) {
+void quickSort(vector<pair<int, int>>& arr, int low, int high) {
     if (low < high) {
         int pi = partition(arr, low, high);
         quickSort(arr, low, pi - 1);
@@ -28,13 +28,22 @@ void quickSort(vector<int>& arr, int low, int high) {
     }
 }
 
-void quickSort(vector<int>& arr) {
+void quickSort(vector<pair<int, int>>& arr) {
     quickSort(arr, 0, arr.size() - 1);
 }
 
-bool isSorted(const vector<int>& arr) {
+bool isSorted(const vector<pair<int, int>>& arr) {
     for (size_t i = 1; i < arr.size(); ++i)
-        if (arr[i - 1] > arr[i]) return false;
+        if (arr[i - 1].first > arr[i].first) return false;
+    return true;
+}
+
+bool isStable(const vector<pair<int, int>>& arr) {
+    for (size_t i = 1; i < arr.size(); ++i) {
+        if (arr[i - 1].first == arr[i].first &&
+            arr[i - 1].second > arr[i].second)
+            return false;
+    }
     return true;
 }
 
@@ -55,10 +64,14 @@ int main(int argc, char* argv[]) {
     }
 
     string filename = argv[1];
+    vector<int> input = readInput(filename);
+    int n = input.size();
     double total_time = 0.0;
 
     for (int i = 0; i < 10; ++i) {
-        vector<int> arr = readInput(filename);
+        vector<pair<int, int>> arr(n);
+        for (int j = 0; j < n; ++j)
+            arr[j] = {input[j], j};
 
         auto start = high_resolution_clock::now();
         quickSort(arr);
@@ -72,9 +85,11 @@ int main(int argc, char* argv[]) {
     double average = total_time / 10.0;
     cout << "Average Execution Time (10 runs): " << fixed << setprecision(4) << average << " ms" << endl;
 
-    vector<int> arr = readInput(filename);
+    vector<pair<int, int>> arr(n);
+    for (int j = 0; j < n; ++j)
+        arr[j] = {input[j], j};
     quickSort(arr);
-    cout << "Final Result: " << (isSorted(arr) ? "Sorted" : "Not sorted") << endl;
+    cout << "Stability: " << (isStable(arr) ? "Stable" : "Not stable") << endl;
 
     return 0;
 }
