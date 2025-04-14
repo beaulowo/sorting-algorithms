@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <chrono>
+#include <iomanip>
 
 using namespace std;
 using namespace chrono;
@@ -73,7 +74,7 @@ int main(int argc, char* argv[]) {
     }
 
     double avgTime = totalTime / 10.0;
-    cout << "Average Execution Time (10 runs): " << avgTime << " ms" << endl;
+    cout << fixed << setprecision(4) << "Average Execution Time (10 runs): " << avgTime << " ms" << endl;
 
     cout << "Final Result: " << (isSorted(arr) ? "Sorted" : "Not sorted") << endl;
 
