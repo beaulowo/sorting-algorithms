@@ -49,23 +49,25 @@ bool isStable(const vector<pair<int, int>>& sorted) {
     return true;
 }
 
+vector<int> readInput(const string& filename) {
+    ifstream in(filename);
+    int n;
+    in >> n;
+    vector<int> arr(n);
+    for (int i = 0; i < n; ++i)
+        in >> arr[i];
+    return arr;
+}
+
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         cerr << "Usage: " << argv[0] << " <input_file>\n";
         return 1;
     }
 
-    ifstream inFile(argv[1]);
-    if (!inFile) {
-        cerr << "Error opening file: " << argv[1] << endl;
-        return 1;
-    }
-
-    int n;
-    inFile >> n;
-    vector<int> values(n);
-    for (int i = 0; i < n; ++i) inFile >> values[i];
-    inFile.close();
+    string filename = argv[1];
+    vector<int> values = readInput(filename);
+    int n = values.size();
 
     double totalTime = 0.0;
     vector<pair<int, int>> arr;
@@ -85,7 +87,7 @@ int main(int argc, char* argv[]) {
 
     double avgTime = totalTime / 10.0;
     cout << fixed << setprecision(4) << "Average Execution Time (10 runs): " << avgTime << " ms" << endl;
-    cout << "Stability: " << (isStable(arr) ? "Stable" : "Not stable") << endl;
+    cout << "Stability: " << (isStable(arr) ? "Stable ✔️" : "Not stable ❌") << endl;
 
     return 0;
 }
