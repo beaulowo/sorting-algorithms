@@ -70,8 +70,7 @@ int main(int argc, char* argv[]) {
     double avgTime = totalTime / 10.0;
     cout << "Average Execution Time (10 runs): " << avgTime << " ms" << endl;
 
-    if (isSorted(arr)) cout << "Final Result: Sorted" << endl;
-    else cout << "Final Result: Not Sorted" << endl;
+    cout << "Final Result: " << (isSorted(arr) ? "Sorted" : "Not sorted") << endl;
 
     return 0;
 }
