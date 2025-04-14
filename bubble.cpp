@@ -7,13 +7,13 @@
 using namespace std;
 using namespace chrono;
 
-void bubbleSort(vector<int>& arr) {
+void bubbleSort(vector<pair<int, int>>& arr) {
     int n = arr.size();
     bool swapped;
     for (int i = 0; i < n - 1; ++i) {
         swapped = false;
         for (int j = 0; j < n - i - 1; ++j) {
-            if (arr[j] > arr[j + 1]) {
+            if (arr[j].first > arr[j + 1].first) {
                 swap(arr[j], arr[j + 1]);
                 swapped = true;
             }
@@ -22,9 +22,18 @@ void bubbleSort(vector<int>& arr) {
     }
 }
 
-bool isSorted(const vector<int>& arr) {
+bool isSorted(const vector<pair<int, int>>& arr) {
     for (int i = 1; i < arr.size(); ++i)
-        if (arr[i - 1] > arr[i]) return false;
+        if (arr[i - 1].first > arr[i].first) return false;
+    return true;
+}
+
+bool isStable(const vector<pair<int, int>>& arr) {
+    for (int i = 1; i < arr.size(); ++i) {
+        if (arr[i - 1].first == arr[i].first &&
+            arr[i - 1].second > arr[i].second)
+            return false;
+    }
     return true;
 }
 
@@ -42,15 +51,16 @@ int main(int argc, char* argv[]) {
 
     int n;
     inFile >> n;
-    vector<int> original(n);
-    for (int i = 0; i < n; ++i) inFile >> original[i];
+    vector<int> values(n);
+    for (int i = 0; i < n; ++i) inFile >> values[i];
     inFile.close();
 
     double totalTime = 0.0;
-    vector<int> arr;
+    vector<pair<int, int>> arr;
 
     for (int trial = 1; trial <= 10; ++trial) {
-        arr = original;
+        arr.clear();
+        for (int i = 0; i < n; ++i) arr.emplace_back(values[i], i);
 
         auto start = high_resolution_clock::now();
         bubbleSort(arr);
@@ -63,8 +73,7 @@ int main(int argc, char* argv[]) {
 
     double avgTime = totalTime / 10.0;
     cout << fixed << setprecision(4) << "Average Execution Time (10 runs): " << avgTime << " ms" << endl;
-
-    cout << "Final Result: " << (isSorted(arr) ? "Sorted" : "Not sorted") << endl;
+    cout << "Stability: " << (isStable(arr) ? "Stable" : "Not stable") << endl;
 
     return 0;
 }
